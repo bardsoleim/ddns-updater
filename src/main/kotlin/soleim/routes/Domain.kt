@@ -16,11 +16,7 @@ fun Route.domain() {
             call.respond(mapOf("domains" to dao.getAll()))
         }
         post {
-            dao.add(call.receive<Domain>().apply {
-                this.ip =
-                    this.ip.takeUnless { it.isNullOrEmpty() } ?: call.request.headers["X-Forwarded-For"]?.split(",")
-                        ?.firstOrNull()?.trim() ?: call.request.origin.remoteHost
-            })
+            dao.add(call.receive())
             call.respond(HttpStatusCode.Created)
         }
         delete {
