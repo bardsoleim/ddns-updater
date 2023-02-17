@@ -12,6 +12,6 @@ EXPOSE 8084
 
 RUN mkdir /app
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/ddns-updater.jar
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/
 
 ENTRYPOINT ["java", "-jar", "/app/ddns-updater.jar"]
