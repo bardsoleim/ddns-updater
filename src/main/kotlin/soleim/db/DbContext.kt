@@ -20,6 +20,5 @@ object DatabaseFactory {
         newSuspendedTransaction(Dispatchers.IO) { block() }
 }
 
-
-val dao: DocumentDao = DocumentDaoImpl();
+val dao: DocumentDao by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { DocumentDaoImpl() }
 
