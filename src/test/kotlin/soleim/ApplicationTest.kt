@@ -1,0 +1,5 @@
+package soleim
+
+
+class ApplicationTest {
+}
