@@ -1,6 +1,8 @@
 package soleim.db
 
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import soleim.db.models.Domains
@@ -9,6 +11,7 @@ import soleim.dto.Domain
 interface DocumentDao {
     suspend fun getAll(): List<Domain>
     suspend fun add(domain: Domain): Domain?
+    suspend fun delete(domain: String)
 }
 
 class DocumentDaoImpl : DocumentDao {
@@ -35,4 +38,9 @@ class DocumentDaoImpl : DocumentDao {
             insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToDomainDTO)
         }
 
+    override suspend fun delete(domain: String) {
+        DatabaseFactory.dbQuery {
+            Domains.deleteWhere { Domains.domain eq domain }
+        }
+    }
 }
