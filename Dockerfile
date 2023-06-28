@@ -8,7 +8,7 @@ RUN gradle buildFatJar --no-daemon
 
 FROM openjdk:17
 
-EXPOSE 8084
+EXPOSE 1337
 
 RUN mkdir /app
 
