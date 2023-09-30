@@ -10,8 +10,9 @@ val ioScope = CoroutineScope(Dispatchers.IO) + SupervisorJob()
 fun startScheduler() {
     ioScope.launch {
         while (ioScope.isActive) {
+            println("updating ddns...")
             dao.getAll().forEach { domain ->
-                launch {
+                ioScope.launch {
                     HttpClient(Apache).use {
                         it.get(domain.dnsProvider) {
                             url {
@@ -25,7 +26,8 @@ fun startScheduler() {
                 }
 
             }
-            delay(5000)
+
+            delay(1000)
         }
     }
 }
