@@ -35,4 +35,4 @@ jobs:
           gh release create latest ddns-updater.jar \
             --title "Latest Build ($(date -u '+%Y-%m-%d %H:%M UTC'))" \
             --notes "Automatically built from commit ${{ github.sha }}." \
-            --prerelease
+            --latest
