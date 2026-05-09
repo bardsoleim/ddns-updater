@@ -7,12 +7,20 @@ Built with Kotlin + Ktor, runs as a systemd service on Ubuntu.
 ## Install
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/bardsoleim/ddns-updater/main/install.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/bardsoleim/ddns-updater/master/install.sh | sudo bash
 ```
 
 Requires Ubuntu with `curl` available. The script installs Java 21, downloads the latest pre-built JAR from GitHub Releases, and sets up a systemd service.
 
 Re-running the same command will update the app to the latest version.
+
+## Uninstall
+
+```bash
+curl -sSL https://raw.githubusercontent.com/bardsoleim/ddns-updater/master/uninstall.sh | sudo bash
+```
+
+You will be asked whether to also delete the domain database.
 
 ## Managing the service
 
