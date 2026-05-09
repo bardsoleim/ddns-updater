@@ -30,7 +30,7 @@ class DocumentDaoImpl : DocumentDao {
     override suspend fun add(domainDto: Domain): Domain? =
         DatabaseFactory.dbQuery {
             val insertStatement = Domains.insert {
-                it[ip] = domainDto.ip.toString()
+                it[ip] = domainDto.ip
                 it[domain] = domainDto.domain
                 it[dnsProvider] = domainDto.dnsProvider
                 it[password] = domainDto.password

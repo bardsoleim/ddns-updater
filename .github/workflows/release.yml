@@ -1,0 +1,38 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build fat JAR
+        run: ./gradlew shadowJar
+
+      - name: Rename JAR
+        run: cp build/libs/*-all.jar ddns-updater.jar
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes 2>/dev/null || true
+          gh release create latest ddns-updater.jar \
+            --title "Latest Build ($(date -u '+%Y-%m-%d %H:%M UTC'))" \
+            --notes "Automatically built from commit ${{ github.sha }}." \
+            --prerelease

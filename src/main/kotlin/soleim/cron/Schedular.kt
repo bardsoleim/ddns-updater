@@ -1,33 +1,44 @@
 package soleim.cron
+
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.*
 import soleim.db.dao
-import io.ktor.client.request.*
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.*
 
 val ioScope = CoroutineScope(Dispatchers.IO) + SupervisorJob()
+
+private val lastUpdatedIp = mutableMapOf<String, String>()
+
+private suspend fun fetchPublicIp(client: HttpClient): String? = runCatching {
+    client.get("https://api.ipify.org").bodyAsText().trim()
+}.getOrNull()
 
 fun startScheduler() {
     ioScope.launch {
         while (ioScope.isActive) {
-            println("updating ddns...")
-            dao.getAll().forEach { domain ->
-                ioScope.launch {
-                    HttpClient(Apache).use {
-                        it.get(domain.dnsProvider) {
-                            url {
-                                domain.ip?.let {parameters.append("host", domain.ip!!) }
-                                parameters.append("domain", domain.domain)
-                                parameters.append("password", domain.password)
+            runCatching {
+                HttpClient(Apache).use { client ->
+                    val publicIp = fetchPublicIp(client)
+                    dao.getAll().forEach { domain ->
+                        val ip = domain.ip ?: publicIp ?: return@forEach
+                        if (lastUpdatedIp[domain.domain] == ip) return@forEach
+                        runCatching {
+                            client.get(domain.dnsProvider) {
+                                url {
+                                    parameters.append("host", ip)
+                                    parameters.append("domain", domain.domain)
+                                    parameters.append("password", domain.password)
+                                }
                             }
-                        }
-                        it.close()
+                            lastUpdatedIp[domain.domain] = ip
+                            println("Updated ${domain.domain} to $ip")
+                        }.onFailure { println("Failed to update ${domain.domain}: ${it.message}") }
                     }
                 }
-
-            }
-
-            delay(1000)
+            }.onFailure { println("Scheduler error: ${it.message}") }
+            delay(5 * 60 * 1000L)
         }
     }
 }
