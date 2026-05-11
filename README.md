@@ -36,18 +36,34 @@ The service runs on port **1337** and is intended to be accessible only from you
 
 ### Add a domain
 
+**Namecheap** (root domain):
 ```bash
 curl -X POST http://localhost:1337/domain \
   -H "Content-Type: application/json" \
   -d '{
-    "dnsProvider": "https://your-dns-provider.com/update",
+    "dnsProvider": "https://dynamicdns.park-your-domain.com/update",
     "domain": "example.com",
-    "password": "your-api-key",
-    "ip": "1.2.3.4"
+    "password": "your-namecheap-ddns-password"
   }'
 ```
 
-Leave out `ip` to have the service auto-detect your public IP.
+**Namecheap** (subdomain, e.g. `www`):
+```bash
+curl -X POST http://localhost:1337/domain \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dnsProvider": "https://dynamicdns.park-your-domain.com/update",
+    "domain": "example.com",
+    "password": "your-namecheap-ddns-password",
+    "host": "www"
+  }'
+```
+
+`host` defaults to `"@"` (root domain) when omitted. Leave out `ip` to have the service auto-detect your public IP, or provide it explicitly:
+
+```bash
+  "ip": "1.2.3.4"
+```
 
 ### List domains
 
@@ -66,7 +82,7 @@ curl -X DELETE http://localhost:1337/domain \
 
 Every 5 minutes the service:
 1. Fetches your current public IP (via [api.ipify.org](https://api.ipify.org))
-2. For each registered domain, calls the configured `dnsProvider` URL with `?host=<ip>&domain=<domain>&password=<password>`
+2. For each registered domain, calls the configured `dnsProvider` URL with `?host=<subdomain>&domain=<domain>&password=<password>&ip=<ip>`
 3. Only makes the call if the IP has changed since the last update
 
 ## Data
