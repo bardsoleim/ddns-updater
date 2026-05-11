@@ -21,6 +21,7 @@ class DocumentDaoImpl : DocumentDao {
         domain = row[Domains.domain],
         password = row[Domains.password],
         ip = row[Domains.ip],
+        host = row[Domains.host],
     )
 
     override suspend fun getAll(): List<Domain> = DatabaseFactory.dbQuery {
@@ -34,6 +35,7 @@ class DocumentDaoImpl : DocumentDao {
                 it[domain] = domainDto.domain
                 it[dnsProvider] = domainDto.dnsProvider
                 it[password] = domainDto.password
+                it[host] = domainDto.host
             }
             insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToDomainDTO)
         }

@@ -8,6 +8,7 @@ object Domains : Table() {
     val domain = varchar("domain", 1024)
     val password = varchar("password", 1024)
     val ip = varchar("ip", 1024).nullable()
+    val host = varchar("host", 256).default("@")
 
     override val primaryKey = PrimaryKey(domain)
 }
