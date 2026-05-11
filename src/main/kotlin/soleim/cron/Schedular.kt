@@ -27,13 +27,14 @@ fun startScheduler() {
                         runCatching {
                             client.get(domain.dnsProvider) {
                                 url {
-                                    parameters.append("host", ip)
+                                    parameters.append("host", domain.host)
                                     parameters.append("domain", domain.domain)
                                     parameters.append("password", domain.password)
+                                    parameters.append("ip", ip)
                                 }
                             }
                             lastUpdatedIp[domain.domain] = ip
-                            println("Updated ${domain.domain} to $ip")
+                            println("Updated ${domain.domain} (host=${domain.host}) to $ip")
                         }.onFailure { println("Failed to update ${domain.domain}: ${it.message}") }
                     }
                 }
